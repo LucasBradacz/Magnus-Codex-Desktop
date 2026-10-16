@@ -4,18 +4,108 @@
         xmlns:views="using:MagnusCodex.Desktop.Views"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="700"
+        mc:Ignorable="d" d:DesignWidth="1100" d:DesignHeight="720"
         x:Class="MagnusCodex.Desktop.Views.MainWindow"
         x:DataType="vm:MainViewModel"
         Title="Magnus Codex"
-        Width="1000" Height="700"
-        MinWidth="800" MinHeight="500"
+        Width="1100" Height="720"
+        MinWidth="900" MinHeight="560"
         Background="#181825">
 
     <Design.DataContext>
         <vm:MainViewModel />
     </Design.DataContext>
 
-    <views:CartasView DataContext="{Binding Cartas}"/>
+    <Window.Styles>
+      <!-- Botão da barra lateral -->
+      <Style Selector="Button.nav">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="#585B70"/>
+        <Setter Property="Width" Value="56"/>
+        <Setter Property="Height" Value="56"/>
+        <Setter Property="Padding" Value="0"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="CornerRadius" Value="12"/>
+      </Style>
+      <Style Selector="Button.nav:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="#313244"/>
+        <Setter Property="TextElement.Foreground" Value="#CDD6F4"/>
+      </Style>
+      <Style Selector="Button.nav.ativo /template/ ContentPresenter">
+        <Setter Property="Background" Value="#45475A"/>
+        <Setter Property="TextElement.Foreground" Value="#CBA6F7"/>
+      </Style>
+    </Window.Styles>
 
+    <Grid ColumnDefinitions="64 Auto * ">
+
+      <!-- ── Barra lateral ──────────────────────────────────────────────── -->
+      <Border Grid.Column="0"
+              Background="#181825"
+              BorderBrush="#313244"
+              BorderThickness="0 0 1 0">
+        <StackPanel VerticalAlignment="Top" Margin="4 12" Spacing="8">
+
+          <!-- Personagens -->
+          <Button Classes="nav"
+                  Classes.ativo="{Binding AbaPersonagensAtiva}"
+                  Command="{Binding NavPersonagensCommand}"
+                  ToolTip.Tip="Personagens">
+            <TextBlock Text="👤" FontSize="22"/>
+          </Button>
+
+          <!-- Cartas -->
+          <Button Classes="nav"
+                  Classes.ativo="{Binding AbaCartasAtiva}"
+                  Command="{Binding NavCartasCommand}"
+                  ToolTip.Tip="Cartas">
+            <TextBlock Text="🃏" FontSize="22"/>
+          </Button>
+
+        </StackPanel>
+      </Border>
+
+      <!-- ── Painel de personagens (lista lateral) ──────────────────────── -->
+      <Border Grid.Column="1"
+              Width="280"
+              BorderBrush="#313244"
+              BorderThickness="0 0 1 0"
+              IsVisible="{Binding AbaPersonagensAtiva}">
+        <views:PersonagemListaView DataContext="{Binding Lista}"/>
+      </Border>
+
+      <!-- ── Área de conteúdo principal ─────────────────────────────────── -->
+      <Grid Grid.Column="2">
+
+        <!-- Ficha do personagem -->
+        <views:PersonagemFichaView
+            DataContext="{Binding Ficha}"
+            IsVisible="{Binding $parent[Window].((vm:MainViewModel)DataContext).FichaAberta}"/>
+
+        <!-- Tela de cartas -->
+        <views:CartasView
+            DataContext="{Binding Cartas}"
+            IsVisible="{Binding $parent[Window].((vm:MainViewModel)DataContext).AbaCartasAtiva}"/>
+
+        <!-- Placeholder quando nenhum personagem está aberto -->
+        <StackPanel IsVisible="{Binding MostrarPlaceholderPersonagem}"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Center"
+                    Spacing="12">
+          <TextBlock Text="👤"
+                     FontSize="48"
+                     HorizontalAlignment="Center"
+                     Opacity="0.3"/>
+          <TextBlock Text="Selecione ou crie um personagem"
+                     Foreground="#585B70"
+                     FontSize="14"
+                     HorizontalAlignment="Center"/>
+        </StackPanel>
+
+      </Grid>
+
+    </Grid>
 </Window>

@@ -1,0 +1,180 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:MagnusCodex.Desktop.ViewModels"
+             xmlns:entity="using:MagnusCodex.Domain.Entities"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="600"
+             x:Class="MagnusCodex.Desktop.Views.PersonagemListaView"
+             x:DataType="vm:PersonagemListaViewModel">
+
+  <UserControl.Styles>
+    <Style Selector="Button.primario">
+      <Setter Property="Background" Value="#7C3AED"/>
+      <Setter Property="Foreground" Value="White"/>
+      <Setter Property="Padding" Value="14 8"/>
+      <Setter Property="CornerRadius" Value="6"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Cursor" Value="Hand"/>
+    </Style>
+    <Style Selector="Button.primario:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="#6D28D9"/>
+    </Style>
+    <Style Selector="Button.secundario">
+      <Setter Property="Background" Value="#45475A"/>
+      <Setter Property="Foreground" Value="#CDD6F4"/>
+      <Setter Property="Padding" Value="14 8"/>
+      <Setter Property="CornerRadius" Value="6"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Cursor" Value="Hand"/>
+    </Style>
+    <Style Selector="Button.perigo">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="Foreground" Value="#F38BA8"/>
+      <Setter Property="Padding" Value="6 4"/>
+      <Setter Property="CornerRadius" Value="4"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Cursor" Value="Hand"/>
+    </Style>
+  </UserControl.Styles>
+
+  <DockPanel Background="#1E1E2E">
+
+    <!-- Cabeçalho -->
+    <Border DockPanel.Dock="Top" Padding="20 16" Background="#181825">
+      <Grid ColumnDefinitions="* Auto">
+        <TextBlock Grid.Column="0"
+                   Text="Personagens"
+                   FontSize="20"
+                   FontWeight="Bold"
+                   Foreground="#CDD6F4"
+                   VerticalAlignment="Center"/>
+        <Button Grid.Column="1"
+                Content="+ Novo"
+                Classes="primario"
+                Command="{Binding IniciarCriacaoCommand}"
+                IsVisible="{Binding !CriandoNovo}"/>
+      </Grid>
+    </Border>
+
+    <!-- Formulário de criação (aparece ao clicar em Novo) -->
+    <Border DockPanel.Dock="Top"
+            IsVisible="{Binding CriandoNovo}"
+            Background="#313244"
+            Padding="20 16"
+            Margin="0 0 0 1">
+      <StackPanel Spacing="10">
+        <TextBlock Text="Novo Personagem"
+                   FontSize="14"
+                   FontWeight="SemiBold"
+                   Foreground="#CBA6F7"/>
+        <TextBox PlaceholderText="Nome do personagem"
+                 Text="{Binding NovoNome}"
+                 Background="#45475A"
+                 Foreground="#CDD6F4"
+                 CornerRadius="6"
+                 BorderThickness="0"
+                 Padding="10 8"/>
+        <TextBox PlaceholderText="Nome do jogador"
+                 Text="{Binding NovoPlayer}"
+                 Background="#45475A"
+                 Foreground="#CDD6F4"
+                 CornerRadius="6"
+                 BorderThickness="0"
+                 Padding="10 8"/>
+        <StackPanel Orientation="Horizontal" Spacing="8">
+          <Button Content="Criar"
+                  Classes="primario"
+                  Command="{Binding CriarPersonagemCommand}"/>
+          <Button Content="Cancelar"
+                  Classes="secundario"
+                  Command="{Binding CancelarCriacaoCommand}"/>
+        </StackPanel>
+      </StackPanel>
+    </Border>
+
+    <!-- Lista de personagens -->
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+      <StackPanel>
+
+        <!-- Indicador de carregamento -->
+        <Border IsVisible="{Binding Carregando}"
+                Padding="20 12">
+          <TextBlock Text="Carregando…"
+                     Foreground="#A6ADC8"
+                     HorizontalAlignment="Center"/>
+        </Border>
+
+        <!-- Mensagem de lista vazia -->
+        <TextBlock IsVisible="{Binding Personagens.Count, Converter={x:Static ObjectConverters.IsNull}}"
+                   Text="Nenhum personagem ainda.&#10;Clique em + Novo para começar."
+                   Foreground="#585B70"
+                   TextAlignment="Center"
+                   HorizontalAlignment="Center"
+                   Margin="20 40"/>
+
+        <!-- Itens -->
+        <ItemsControl ItemsSource="{Binding Personagens}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="entity:Personagem">
+              <Border Background="#313244"
+                      Margin="12 4"
+                      CornerRadius="8"
+                      Padding="16 12"
+                      Cursor="Hand">
+                <Border.Styles>
+                  <Style Selector="Border:pointerover">
+                    <Setter Property="Background" Value="#45475A"/>
+                  </Style>
+                </Border.Styles>
+                <Grid ColumnDefinitions="* Auto">
+
+                  <!-- Info do personagem (clicável) -->
+                  <Button Grid.Column="0"
+                          Background="Transparent"
+                          BorderThickness="0"
+                          Padding="0"
+                          HorizontalContentAlignment="Stretch"
+                          HorizontalAlignment="Stretch"
+                          Cursor="Hand"
+                          Command="{Binding $parent[UserControl].((vm:PersonagemListaViewModel)DataContext).SelecionarCommand}"
+                          CommandParameter="{Binding}">
+                    <StackPanel Spacing="2">
+                      <TextBlock Text="{Binding Nome}"
+                                 FontSize="15"
+                                 FontWeight="SemiBold"
+                                 Foreground="#CDD6F4"/>
+                      <StackPanel Orientation="Horizontal" Spacing="8">
+                        <TextBlock Text="{Binding Player}"
+                                   FontSize="12"
+                                   Foreground="#A6ADC8"/>
+                        <TextBlock Text="·"
+                                   FontSize="12"
+                                   Foreground="#585B70"/>
+                        <TextBlock FontSize="12"
+                                   Foreground="#A6ADC8">
+                          <Run Text="Nível "/>
+                          <Run Text="{Binding Nivel}"/>
+                        </TextBlock>
+                      </StackPanel>
+                    </StackPanel>
+                  </Button>
+
+                  <!-- Botão excluir -->
+                  <Button Grid.Column="1"
+                          Content="✕"
+                          Classes="perigo"
+                          VerticalAlignment="Center"
+                          Command="{Binding $parent[UserControl].((vm:PersonagemListaViewModel)DataContext).ExcluirCommand}"
+                          CommandParameter="{Binding}"/>
+                </Grid>
+              </Border>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+      </StackPanel>
+    </ScrollViewer>
+
+  </DockPanel>
+</UserControl>

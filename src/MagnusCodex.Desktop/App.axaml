@@ -1,13 +1,17 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:conv="using:MagnusCodex.Desktop.Converters"
              x:Class="MagnusCodex.Desktop.App"
              xmlns:local="using:MagnusCodex.Desktop"
              RequestedThemeVariant="Default">
-             <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
 
     <Application.DataTemplates>
         <local:ViewLocator />
     </Application.DataTemplates>
+
+    <Application.Resources>
+        <conv:StringEqualityConverter x:Key="StringEqualityConverter"/>
+    </Application.Resources>
 
     <Application.Styles>
         <FluentTheme />

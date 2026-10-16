@@ -23,6 +23,7 @@ public class Personagem
 
     // Status atuais (persistidos)
     public int VidaAtual { get; set; }
+    public int VidaAdicional { get; set; }
     public int ManaAtual { get; set; }
     public int EstabilidadeAtual { get; set; }
     public int Dinheiro { get; set; }

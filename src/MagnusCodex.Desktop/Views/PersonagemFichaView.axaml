@@ -1,0 +1,408 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:MagnusCodex.Desktop.ViewModels"
+             xmlns:views="using:MagnusCodex.Desktop.Views"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="800"
+             x:Class="MagnusCodex.Desktop.Views.PersonagemFichaView"
+             x:DataType="vm:PersonagemFichaViewModel">
+
+  <UserControl.Styles>
+    <!-- Aba inativa -->
+    <Style Selector="Button.aba">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="Foreground" Value="#585B70"/>
+      <Setter Property="BorderThickness" Value="0 0 0 2"/>
+      <Setter Property="BorderBrush" Value="Transparent"/>
+      <Setter Property="Padding" Value="20 10"/>
+      <Setter Property="CornerRadius" Value="0"/>
+      <Setter Property="FontSize" Value="13"/>
+      <Setter Property="Cursor" Value="Hand"/>
+    </Style>
+    <Style Selector="Button.aba:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="#313244"/>
+      <Setter Property="TextElement.Foreground" Value="#CDD6F4"/>
+    </Style>
+    <!-- Aba ativa -->
+    <Style Selector="Button.aba.ativo">
+      <Setter Property="Foreground" Value="#CBA6F7"/>
+      <Setter Property="BorderBrush" Value="#CBA6F7"/>
+      <Setter Property="FontWeight" Value="SemiBold"/>
+    </Style>
+    <Style Selector="Button.primario">
+      <Setter Property="Background" Value="#7C3AED"/>
+      <Setter Property="Foreground" Value="White"/>
+      <Setter Property="Padding" Value="14 8"/>
+      <Setter Property="CornerRadius" Value="6"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Cursor" Value="Hand"/>
+    </Style>
+    <Style Selector="Button.primario:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="#6D28D9"/>
+    </Style>
+    <Style Selector="Button.secundario">
+      <Setter Property="Background" Value="#45475A"/>
+      <Setter Property="Foreground" Value="#CDD6F4"/>
+      <Setter Property="Padding" Value="14 8"/>
+      <Setter Property="CornerRadius" Value="6"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Cursor" Value="Hand"/>
+    </Style>
+    <Style Selector="Button.filtro">
+      <Setter Property="Background" Value="#45475A"/>
+      <Setter Property="Foreground" Value="#CDD6F4"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Cursor" Value="Hand"/>
+    </Style>
+    <Style Selector="TextBlock.secao">
+      <Setter Property="FontSize" Value="11"/>
+      <Setter Property="FontWeight" Value="Bold"/>
+      <Setter Property="Foreground" Value="#585B70"/>
+      <Setter Property="Margin" Value="0 0 0 4"/>
+    </Style>
+    <Style Selector="TextBlock.valorCalc">
+      <Setter Property="FontSize" Value="20"/>
+      <Setter Property="FontWeight" Value="Bold"/>
+      <Setter Property="Foreground" Value="#CDD6F4"/>
+      <Setter Property="HorizontalAlignment" Value="Center"/>
+    </Style>
+    <Style Selector="TextBlock.labelCalc">
+      <Setter Property="FontSize" Value="10"/>
+      <Setter Property="Foreground" Value="#A6ADC8"/>
+      <Setter Property="HorizontalAlignment" Value="Center"/>
+      <Setter Property="Margin" Value="0 0 0 6"/>
+    </Style>
+    <Style Selector="NumericUpDown">
+      <Setter Property="Background" Value="#45475A"/>
+      <Setter Property="Foreground" Value="#CDD6F4"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="CornerRadius" Value="6"/>
+      <Setter Property="Minimum" Value="0"/>
+      <Setter Property="Maximum" Value="99"/>
+      <Setter Property="Width" Value="120"/>
+      <Setter Property="FormatString" Value="0"/>
+    </Style>
+    <Style Selector="TextBox">
+      <Setter Property="Background" Value="#45475A"/>
+      <Setter Property="Foreground" Value="#CDD6F4"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="CornerRadius" Value="6"/>
+      <Setter Property="Padding" Value="10 8"/>
+    </Style>
+  </UserControl.Styles>
+
+  <DockPanel Background="#1E1E2E">
+
+    <!-- ── Barra de abas ────────────────────────────────────────────────── -->
+    <Border DockPanel.Dock="Top"
+            Background="#181825"
+            BorderBrush="#313244"
+            BorderThickness="0 0 0 1">
+      <StackPanel Orientation="Horizontal">
+        <Button Content="📋 Ficha"
+                Classes="aba"
+                Classes.ativo="{Binding AbaFichaAtiva}"
+                Command="{Binding NavFichaCommand}"/>
+        <Button Content="🃏 Cartas"
+                Classes="aba"
+                Classes.ativo="{Binding AbaCartasAtiva}"
+                Command="{Binding NavCartasCommand}"/>
+        <Button Content="✨ Encantamentos"
+                Classes="aba"
+                Classes.ativo="{Binding AbaEncantamentosAtiva}"
+                Command="{Binding NavEncantamentosCommand}"/>
+      </StackPanel>
+    </Border>
+
+    <!-- ── Aba Ficha ─────────────────────────────────────────────────────── -->
+    <ScrollViewer IsVisible="{Binding AbaFichaAtiva}"
+                  VerticalScrollBarVisibility="Auto"
+                  Background="#1E1E2E">
+    <StackPanel Margin="24" Spacing="16">
+
+      <!-- ── Cabeçalho ─────────────────────────────────────────────────── -->
+      <Grid ColumnDefinitions="* * Auto">
+
+        <StackPanel Grid.Column="0" Spacing="6" Margin="0 0 12 0">
+          <TextBlock Text="PERSONAGEM" Classes="secao"/>
+          <TextBox Text="{Binding Nome}"/>
+        </StackPanel>
+
+        <StackPanel Grid.Column="1" Spacing="6" Margin="0 0 12 0">
+          <TextBlock Text="JOGADOR" Classes="secao"/>
+          <TextBox Text="{Binding Player}"/>
+        </StackPanel>
+
+        <StackPanel Grid.Column="2" Spacing="6" HorizontalAlignment="Center">
+          <TextBlock Text="NÍVEL" Classes="secao" HorizontalAlignment="Center"/>
+          <NumericUpDown Value="{Binding Nivel}"
+                         Minimum="1" Maximum="10"
+                         Width="120"
+                         HorizontalContentAlignment="Center"
+                         FontSize="22" FontWeight="Bold"/>
+        </StackPanel>
+
+      </Grid>
+
+      <!-- ── Atributos ──────────────────────────────────────────────────── -->
+      <Border Background="#313244" CornerRadius="10" Padding="16">
+        <StackPanel Spacing="10">
+          <TextBlock Text="ATRIBUTOS" Classes="secao"/>
+          <WrapPanel Orientation="Horizontal">
+            <StackPanel Spacing="0" Margin="0 0 16 0">
+              <TextBlock Text="Agilidade"   Classes="labelCalc"/>
+              <NumericUpDown Value="{Binding Agilidade}"/>
+            </StackPanel>
+            <StackPanel Spacing="0" Margin="0 0 16 0">
+              <TextBlock Text="Domínio"     Classes="labelCalc"/>
+              <NumericUpDown Value="{Binding Dominio}"/>
+            </StackPanel>
+            <StackPanel Spacing="0" Margin="0 0 16 0">
+              <TextBlock Text="Percepção"   Classes="labelCalc"/>
+              <NumericUpDown Value="{Binding Percepcao}"/>
+            </StackPanel>
+            <StackPanel Spacing="0" Margin="0 0 16 0">
+              <TextBlock Text="Potência"    Classes="labelCalc"/>
+              <NumericUpDown Value="{Binding Potencia}"/>
+            </StackPanel>
+            <StackPanel Spacing="0">
+              <TextBlock Text="Resistência" Classes="labelCalc"/>
+              <NumericUpDown Value="{Binding Resistencia}"/>
+            </StackPanel>
+          </WrapPanel>
+        </StackPanel>
+      </Border>
+
+      <!-- ── Disciplinas ────────────────────────────────────────────────── -->
+      <Border Background="#313244" CornerRadius="10" Padding="16">
+        <StackPanel Spacing="10">
+          <TextBlock Text="DISCIPLINAS" Classes="secao"/>
+          <WrapPanel Orientation="Horizontal">
+            <StackPanel Spacing="0" Margin="0 0 16 0">
+              <TextBlock Text="Superior"       Classes="labelCalc"/>
+              <NumericUpDown Value="{Binding Superior}"/>
+            </StackPanel>
+            <StackPanel Spacing="0" Margin="0 0 16 0">
+              <TextBlock Text="Esq. Superior"  Classes="labelCalc"/>
+              <NumericUpDown Value="{Binding EsquerdaSuperior}"/>
+            </StackPanel>
+            <StackPanel Spacing="0" Margin="0 0 16 0">
+              <TextBlock Text="Dir. Superior"  Classes="labelCalc"/>
+              <NumericUpDown Value="{Binding DireitaSuperior}"/>
+            </StackPanel>
+            <StackPanel Spacing="0" Margin="0 0 16 0">
+              <TextBlock Text="Esq. Inferior"  Classes="labelCalc"/>
+              <NumericUpDown Value="{Binding EsquerdaInferior}"/>
+            </StackPanel>
+            <StackPanel Spacing="0">
+              <TextBlock Text="Dir. Inferior"  Classes="labelCalc"/>
+              <NumericUpDown Value="{Binding DireitaInferior}"/>
+            </StackPanel>
+          </WrapPanel>
+        </StackPanel>
+      </Border>
+
+      <!-- ── Status ─────────────────────────────────────────────────────── -->
+      <Border Background="#313244" CornerRadius="10" Padding="16">
+        <StackPanel Spacing="14">
+          <TextBlock Text="STATUS" Classes="secao"/>
+
+          <!-- Linha 1: Vida (box dedicada) -->
+          <Border Background="#1E1E2E" CornerRadius="8" Padding="12 10"
+                  Margin="0 0 0 4">
+            <StackPanel Spacing="10">
+              <TextBlock Text="VIDA"
+                         FontSize="10" FontWeight="Bold"
+                         Foreground="#A6E3A1"/>
+
+              <!-- Máximo (só leitura) -->
+              <StackPanel Orientation="Horizontal" Spacing="12"
+                          VerticalAlignment="Center">
+                <TextBlock Text="Máximo:"
+                           Foreground="#A6ADC8" FontSize="12"
+                           VerticalAlignment="Center" Width="70"/>
+                <Border Background="#313244" CornerRadius="6"
+                        Padding="12 6" MinWidth="80">
+                  <TextBlock Text="{Binding StatusCalculados.VidaMax}"
+                             Foreground="#A6E3A1"
+                             FontSize="15" FontWeight="Bold"
+                             HorizontalAlignment="Center"/>
+                </Border>
+              </StackPanel>
+
+              <!-- Atual (editável) -->
+              <StackPanel Orientation="Horizontal" Spacing="12"
+                          VerticalAlignment="Center">
+                <TextBlock Text="Atual:"
+                           Foreground="#A6ADC8" FontSize="12"
+                           VerticalAlignment="Center" Width="70"/>
+                <NumericUpDown Value="{Binding VidaAtual}"
+                               Minimum="0"
+                               Maximum="{Binding StatusCalculados.VidaMax}"/>
+              </StackPanel>
+
+              <!-- Adicional (editável) -->
+              <StackPanel Orientation="Horizontal" Spacing="12"
+                          VerticalAlignment="Center">
+                <TextBlock Text="Adicional:"
+                           Foreground="#A6ADC8" FontSize="12"
+                           VerticalAlignment="Center" Width="70"/>
+                <NumericUpDown Value="{Binding VidaAdicional}"
+                               Minimum="0" Maximum="9999"/>
+              </StackPanel>
+
+              <!-- Separador -->
+              <Border Background="#313244" Height="1" Margin="0 2"/>
+
+              <!-- Total atual = Atual + Adicional (só leitura) -->
+              <StackPanel Orientation="Horizontal" Spacing="12"
+                          VerticalAlignment="Center">
+                <TextBlock Text="Total atual:"
+                           Foreground="#CDD6F4" FontSize="12"
+                           FontWeight="SemiBold"
+                           VerticalAlignment="Center" Width="70"/>
+                <Border Background="#313244" CornerRadius="6"
+                        Padding="12 6" MinWidth="80">
+                  <TextBlock Text="{Binding VidaTotal}"
+                             Foreground="#CDD6F4"
+                             FontSize="15" FontWeight="Bold"
+                             HorizontalAlignment="Center"/>
+                </Border>
+              </StackPanel>
+
+            </StackPanel>
+          </Border>
+
+          <!-- Linha 2: Mana, Estabilidade, Dinheiro -->
+          <StackPanel Orientation="Horizontal" Spacing="16">
+            <StackPanel Spacing="0">
+              <TextBlock Classes="labelCalc">
+                <Run Text="Mana atual (máx "/><Run Text="{Binding StatusCalculados.ManaMax}"/><Run Text=")"/>
+              </TextBlock>
+              <NumericUpDown Value="{Binding ManaAtual}"
+                             Maximum="{Binding StatusCalculados.ManaMax}"/>
+            </StackPanel>
+            <StackPanel Spacing="0">
+              <TextBlock Classes="labelCalc">
+                <Run Text="Estab. atual (máx "/><Run Text="{Binding StatusCalculados.EstabilidadeMax}"/><Run Text=")"/>
+              </TextBlock>
+              <NumericUpDown Value="{Binding EstabilidadeAtual}"
+                             Maximum="{Binding StatusCalculados.EstabilidadeMax}"/>
+            </StackPanel>
+            <StackPanel Spacing="0">
+              <TextBlock Text="Dinheiro" Classes="labelCalc"/>
+              <NumericUpDown Value="{Binding Dinheiro}" Maximum="999999"/>
+            </StackPanel>
+          </StackPanel>
+
+        </StackPanel>
+      </Border>
+
+      <!-- ── Combate ─────────────────────────────────────────────────────── -->
+      <Border Background="#313244" CornerRadius="10" Padding="16">
+        <StackPanel Spacing="10">
+          <TextBlock Text="COMBATE" Classes="secao"/>
+          <WrapPanel Orientation="Horizontal">
+            <StackPanel Spacing="4" Margin="0 0 20 0" Width="72">
+              <TextBlock Text="{Binding StatusCalculados.CA}"       Classes="valorCalc"/>
+              <TextBlock Text="CA"           Classes="labelCalc"/>
+            </StackPanel>
+            <StackPanel Spacing="4" Margin="0 0 20 0" Width="72">
+              <TextBlock Text="{Binding StatusCalculados.Acoes}"    Classes="valorCalc"/>
+              <TextBlock Text="Ações"        Classes="labelCalc"/>
+            </StackPanel>
+            <StackPanel Spacing="4" Margin="0 0 20 0" Width="72">
+              <TextBlock Text="{Binding StatusCalculados.Acerto}"   Classes="valorCalc"/>
+              <TextBlock Text="Acerto"       Classes="labelCalc"/>
+            </StackPanel>
+            <StackPanel Spacing="4" Margin="0 0 20 0" Width="72">
+              <TextBlock Text="{Binding StatusCalculados.Movimento}" Classes="valorCalc"/>
+              <TextBlock Text="Movimento"    Classes="labelCalc"/>
+            </StackPanel>
+            <StackPanel Spacing="4" Margin="0 0 20 0" Width="72">
+              <TextBlock Text="{Binding StatusCalculados.DanoExtra}" Classes="valorCalc"/>
+              <TextBlock Text="Dano Extra"   Classes="labelCalc"/>
+            </StackPanel>
+            <StackPanel Spacing="4" Margin="0 0 20 0" Width="72">
+              <TextBlock Text="{Binding StatusCalculados.CM}"       Classes="valorCalc"/>
+              <TextBlock Text="CM"           Classes="labelCalc"/>
+            </StackPanel>
+            <StackPanel Spacing="4" Width="72">
+              <TextBlock Text="{Binding StatusCalculados.Truque}"   Classes="valorCalc"/>
+              <TextBlock Text="Truque"       Classes="labelCalc"/>
+            </StackPanel>
+          </WrapPanel>
+        </StackPanel>
+      </Border>
+
+      <!-- ── Level Up ──────────────────────────────────────────────────── -->
+      <Border Background="#313244" CornerRadius="10" Padding="16">
+        <StackPanel Spacing="12">
+          <Grid ColumnDefinitions="* Auto">
+            <TextBlock Grid.Column="0" Text="LEVEL UP" Classes="secao" VerticalAlignment="Center"/>
+            <Button Grid.Column="1"
+                    Content="⬆ Upar Nível"
+                    Classes="primario" FontSize="12"
+                    IsVisible="{Binding !LevelUpAberto}"
+                    Command="{Binding AbrirLevelUpCommand}"/>
+          </Grid>
+
+          <Border IsVisible="{Binding LevelUpAberto}"
+                  Background="#1E1E2E" CornerRadius="8" Padding="14">
+            <StackPanel Spacing="12">
+              <TextBlock Text="Escolha a disciplina para subir +1:"
+                         Foreground="#CDD6F4" FontSize="13"/>
+              <ItemsControl ItemsSource="{Binding Disciplinas}">
+                <ItemsControl.ItemsPanel>
+                  <ItemsPanelTemplate>
+                    <StackPanel Orientation="Horizontal" Spacing="8"/>
+                  </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate x:DataType="x:String">
+                    <Button Content="{Binding}"
+                            Classes="filtro"
+                            Padding="12 6" CornerRadius="6"
+                            Command="{Binding $parent[UserControl].((vm:PersonagemFichaViewModel)DataContext).EscolherDisciplinaCommand}"
+                            CommandParameter="{Binding}"/>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+              <TextBlock Foreground="#CBA6F7" FontSize="12">
+                <Run Text="Selecionada: "/>
+                <Run Text="{Binding DisciplinaEscolhida}" FontWeight="Bold"/>
+              </TextBlock>
+              <StackPanel Orientation="Horizontal" Spacing="8">
+                <Button Content="Confirmar" Classes="primario"
+                        Command="{Binding ConfirmarLevelUpCommand}"/>
+                <Button Content="Cancelar"  Classes="secundario"
+                        Command="{Binding CancelarLevelUpCommand}"/>
+              </StackPanel>
+            </StackPanel>
+          </Border>
+
+        </StackPanel>
+      </Border>
+
+      <!-- ── Salvar ─────────────────────────────────────────────────────── -->
+      <Button Content="💾  Salvar"
+              Classes="primario"
+              HorizontalAlignment="Right"
+              Command="{Binding SalvarCommand}"/>
+
+    </StackPanel>
+  </ScrollViewer>
+
+    <!-- ── Aba Cartas ────────────────────────────────────────────────────── -->
+    <views:PersonagemCartasView
+        DataContext="{Binding Cartas}"
+        IsVisible="{Binding $parent[UserControl].((vm:PersonagemFichaViewModel)DataContext).AbaCartasAtiva}"/>
+
+    <!-- ── Aba Encantamentos ─────────────────────────────────────────────── -->
+    <views:EncantamentosView
+        DataContext="{Binding Encantamentos}"
+        IsVisible="{Binding $parent[UserControl].((vm:PersonagemFichaViewModel)DataContext).AbaEncantamentosAtiva}"/>
+
+  </DockPanel>
+</UserControl>

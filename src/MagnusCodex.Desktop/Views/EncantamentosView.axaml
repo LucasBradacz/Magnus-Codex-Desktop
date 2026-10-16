@@ -1,0 +1,445 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:MagnusCodex.Desktop.ViewModels"
+             xmlns:conv="using:MagnusCodex.Desktop.Converters"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="700"
+             x:Class="MagnusCodex.Desktop.Views.EncantamentosView"
+             x:DataType="vm:EncantamentosViewModel">
+
+  <UserControl.Resources>
+    <conv:TipoCorConverter x:Key="TipoCorConverter"/>
+  </UserControl.Resources>
+
+  <UserControl.Styles>
+    <Style Selector="Button.primario">
+      <Setter Property="Background" Value="#7C3AED"/>
+      <Setter Property="Foreground" Value="White"/>
+      <Setter Property="Padding" Value="12 7"/>
+      <Setter Property="CornerRadius" Value="6"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Cursor" Value="Hand"/>
+    </Style>
+    <Style Selector="Button.primario:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="#6D28D9"/>
+    </Style>
+    <Style Selector="Button.secundario">
+      <Setter Property="Background" Value="#45475A"/>
+      <Setter Property="Foreground" Value="#CDD6F4"/>
+      <Setter Property="Padding" Value="12 7"/>
+      <Setter Property="CornerRadius" Value="6"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Cursor" Value="Hand"/>
+    </Style>
+    <Style Selector="Button.perigo">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="Foreground" Value="#F38BA8"/>
+      <Setter Property="Padding" Value="6 3"/>
+      <Setter Property="CornerRadius" Value="4"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Cursor" Value="Hand"/>
+    </Style>
+    <Style Selector="Button.carta">
+      <Setter Property="Background" Value="#45475A"/>
+      <Setter Property="Foreground" Value="#CDD6F4"/>
+      <Setter Property="Padding" Value="6 4"/>
+      <Setter Property="CornerRadius" Value="6"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Cursor" Value="Hand"/>
+      <Setter Property="Margin" Value="0 0 6 6"/>
+    </Style>
+    <Style Selector="Button.carta:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="#585B70"/>
+    </Style>
+    <Style Selector="Button.cartaSelecionada">
+      <Setter Property="Background" Value="#7C3AED"/>
+      <Setter Property="Foreground" Value="White"/>
+      <Setter Property="Padding" Value="6 4"/>
+      <Setter Property="CornerRadius" Value="6"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Cursor" Value="Hand"/>
+      <Setter Property="Margin" Value="0 0 6 6"/>
+    </Style>
+    <Style Selector="TextBlock.secao">
+      <Setter Property="FontSize" Value="11"/>
+      <Setter Property="FontWeight" Value="Bold"/>
+      <Setter Property="Foreground" Value="#585B70"/>
+      <Setter Property="Margin" Value="0 0 0 6"/>
+    </Style>
+    <Style Selector="TextBlock.label">
+      <Setter Property="FontSize" Value="11"/>
+      <Setter Property="Foreground" Value="#585B70"/>
+    </Style>
+    <Style Selector="TextBox">
+      <Setter Property="Background" Value="#45475A"/>
+      <Setter Property="Foreground" Value="#CDD6F4"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="CornerRadius" Value="6"/>
+      <Setter Property="Padding" Value="10 8"/>
+    </Style>
+  </UserControl.Styles>
+
+  <DockPanel Background="#1E1E2E">
+
+    <!-- ── Cabeçalho ─────────────────────────────────────────────────────── -->
+    <Border DockPanel.Dock="Top" Background="#181825" Padding="20 12">
+      <Grid ColumnDefinitions="* Auto">
+        <TextBlock Grid.Column="0"
+                   Text="Encantamentos"
+                   FontSize="16" FontWeight="SemiBold"
+                   Foreground="#CDD6F4" VerticalAlignment="Center"/>
+        <Button Grid.Column="1"
+                Content="+ Novo encantamento"
+                Classes="primario"
+                IsVisible="{Binding !ConstrutorAberto}"
+                Command="{Binding AbrirConstrutorCommand}"/>
+        <Button Grid.Column="1"
+                Content="✕ Cancelar"
+                Classes="secundario"
+                IsVisible="{Binding ConstrutorAberto}"
+                Command="{Binding FecharConstrutorCommand}"/>
+      </Grid>
+    </Border>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+      <StackPanel Margin="16" Spacing="16">
+
+        <!-- ── CONSTRUTOR ─────────────────────────────────────────────────── -->
+        <Border IsVisible="{Binding ConstrutorAberto}"
+                Background="#313244" CornerRadius="10" Padding="16">
+          <StackPanel Spacing="16">
+
+            <TextBlock Text="NOVO ENCANTAMENTO" Classes="secao"/>
+
+            <!-- Preview em tempo real -->
+            <Border Background="#1E1E2E" CornerRadius="8" Padding="12">
+              <WrapPanel Orientation="Horizontal">
+                <StackPanel Margin="0 0 20 0" Spacing="2">
+                  <TextBlock Text="Custo" Classes="label"/>
+                  <TextBlock Text="{Binding PreviewCusto}"
+                             FontSize="22" FontWeight="Bold" Foreground="#CBA6F7"/>
+                </StackPanel>
+                <StackPanel Margin="0 0 20 0" Spacing="2">
+                  <TextBlock Text="Poder" Classes="label"/>
+                  <TextBlock Text="{Binding PreviewPoder}"
+                             FontSize="22" FontWeight="Bold" Foreground="#A6E3A1"/>
+                </StackPanel>
+                <StackPanel Margin="0 0 20 0" Spacing="2">
+                  <TextBlock Text="Ações" Classes="label"/>
+                  <TextBlock Text="{Binding PreviewAcoes}"
+                             FontSize="22" FontWeight="Bold" Foreground="#89B4FA"/>
+                </StackPanel>
+                <StackPanel Margin="0 0 20 0" Spacing="2">
+                  <TextBlock Text="Duração" Classes="label"/>
+                  <TextBlock Text="{Binding Duracao, FallbackValue='-'}"
+                             FontSize="14" Foreground="#CDD6F4"/>
+                </StackPanel>
+                <StackPanel Margin="0 0 20 0" Spacing="2">
+                  <TextBlock Text="Tamanho" Classes="label"/>
+                  <TextBlock Text="{Binding Tamanho, FallbackValue='-'}"
+                             FontSize="14" Foreground="#CDD6F4"/>
+                </StackPanel>
+                <StackPanel Spacing="2">
+                  <TextBlock Text="Alcance" Classes="label"/>
+                  <TextBlock Text="{Binding Alcance, FallbackValue='-'}"
+                             FontSize="14" Foreground="#CDD6F4"/>
+                </StackPanel>
+              </WrapPanel>
+            </Border>
+
+            <!-- 1. Forma -->
+            <StackPanel Spacing="8">
+              <StackPanel Orientation="Horizontal" Spacing="8">
+                <TextBlock Text="1. FORMA" Classes="secao" VerticalAlignment="Center"/>
+                <TextBlock Text="(obrigatória)" Classes="label" VerticalAlignment="Center"/>
+              </StackPanel>
+              <TextBlock Text="Nenhuma forma disponível. Adicione formas às cartas do personagem."
+                         Foreground="#585B70" FontSize="12"
+                         IsVisible="{Binding FormasDisponiveis.Count,
+                             Converter={x:Static ObjectConverters.IsNull}}"/>
+              <WrapPanel>
+                <ItemsControl ItemsSource="{Binding FormasDisponiveis}">
+                  <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                      <WrapPanel Orientation="Horizontal"/>
+                    </ItemsPanelTemplate>
+                  </ItemsControl.ItemsPanel>
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="vm:CartaViewModel">
+                      <Button Content="{Binding Nome}"
+                              Classes="carta"
+                              Command="{Binding $parent[UserControl].((vm:EncantamentosViewModel)DataContext).SelecionarFormaCommand}"
+                              CommandParameter="{Binding}"/>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+              </WrapPanel>
+              <!-- Forma selecionada -->
+              <Border Background="#1E1E2E" CornerRadius="6" Padding="10 6"
+                      IsVisible="{Binding FormaSelecionada,
+                          Converter={x:Static ObjectConverters.IsNotNull}}">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                  <TextBlock Text="✓" Foreground="#A6E3A1" FontWeight="Bold"/>
+                  <TextBlock Text="{Binding FormaSelecionada.Nome}"
+                             Foreground="#A6E3A1" FontWeight="SemiBold"/>
+                  <TextBlock Text="{Binding FormaSelecionada.RodapeInfo}"
+                             Foreground="#585B70" FontSize="11"/>
+                </StackPanel>
+              </Border>
+            </StackPanel>
+
+            <!-- 2. Transmutações -->
+            <StackPanel Spacing="8">
+              <StackPanel Orientation="Horizontal" Spacing="8">
+                <TextBlock Text="2. TRANSMUTAÇÕES" Classes="secao" VerticalAlignment="Center"/>
+                <TextBlock Text="(máx 2, ordem importa)" Classes="label" VerticalAlignment="Center"/>
+                <TextBlock Text="— bloqueado por esta forma"
+                           Foreground="#F38BA8" FontSize="11"
+                           VerticalAlignment="Center"
+                           IsVisible="{Binding TransmutacaoBloqueada}"/>
+              </StackPanel>
+              <WrapPanel IsVisible="{Binding !TransmutacaoBloqueada}">
+                <ItemsControl ItemsSource="{Binding TransmutacoesDisponiveis}">
+                  <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                      <WrapPanel Orientation="Horizontal"/>
+                    </ItemsPanelTemplate>
+                  </ItemsControl.ItemsPanel>
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="vm:CartaViewModel">
+                      <Button Content="{Binding Nome}"
+                              Classes="carta"
+                              Command="{Binding $parent[UserControl].((vm:EncantamentosViewModel)DataContext).AdicionarTransmutacaoCommand}"
+                              CommandParameter="{Binding}"/>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+              </WrapPanel>
+              <!-- Selecionadas -->
+              <ItemsControl ItemsSource="{Binding TransmutacoesSelecionadas}">
+                <ItemsControl.ItemsPanel>
+                  <ItemsPanelTemplate>
+                    <StackPanel Spacing="4"/>
+                  </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate x:DataType="vm:CartaViewModel">
+                    <Border Background="#1E1E2E" CornerRadius="6" Padding="10 6">
+                      <Grid ColumnDefinitions="* Auto">
+                        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8">
+                          <TextBlock Text="✓" Foreground="#89B4FA" FontWeight="Bold"/>
+                          <TextBlock Text="{Binding Nome}"
+                                     Foreground="#89B4FA" FontWeight="SemiBold"/>
+                          <TextBlock Text="{Binding RodapeInfo}"
+                                     Foreground="#585B70" FontSize="11"/>
+                        </StackPanel>
+                        <Button Grid.Column="1" Content="✕" Classes="perigo"
+                                Command="{Binding $parent[UserControl].((vm:EncantamentosViewModel)DataContext).RemoverTransmutacaoCommand}"
+                                CommandParameter="{Binding}"/>
+                      </Grid>
+                    </Border>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </StackPanel>
+
+            <!-- 3. Modificadores -->
+            <StackPanel Spacing="8">
+              <StackPanel Orientation="Horizontal" Spacing="8">
+                <TextBlock Text="3. MODIFICADORES" Classes="secao" VerticalAlignment="Center"/>
+                <TextBlock Text="(ordem importa, repetição permitida)" Classes="label" VerticalAlignment="Center"/>
+              </StackPanel>
+              <WrapPanel>
+                <ItemsControl ItemsSource="{Binding ModificadoresDisponiveis}">
+                  <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                      <WrapPanel Orientation="Horizontal"/>
+                    </ItemsPanelTemplate>
+                  </ItemsControl.ItemsPanel>
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="vm:CartaViewModel">
+                      <Button Content="{Binding Nome}"
+                              Classes="carta"
+                              Command="{Binding $parent[UserControl].((vm:EncantamentosViewModel)DataContext).AdicionarModificadorCommand}"
+                              CommandParameter="{Binding}"/>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+              </WrapPanel>
+              <!-- Selecionados -->
+              <ItemsControl ItemsSource="{Binding ModificadoresSelecionados}">
+                <ItemsControl.ItemsPanel>
+                  <ItemsPanelTemplate>
+                    <StackPanel Spacing="4"/>
+                  </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate x:DataType="vm:CartaViewModel">
+                    <Border Background="#1E1E2E" CornerRadius="6" Padding="10 6">
+                      <Grid ColumnDefinitions="* Auto">
+                        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8">
+                          <TextBlock Text="✓" Foreground="#FAB387" FontWeight="Bold"/>
+                          <TextBlock Text="{Binding Nome}"
+                                     Foreground="#FAB387" FontWeight="SemiBold"/>
+                          <TextBlock Text="{Binding RodapeInfo}"
+                                     Foreground="#585B70" FontSize="11"/>
+                        </StackPanel>
+                        <Button Grid.Column="1" Content="✕" Classes="perigo"
+                                Command="{Binding $parent[UserControl].((vm:EncantamentosViewModel)DataContext).RemoverModificadorCommand}"
+                                CommandParameter="{Binding}"/>
+                      </Grid>
+                    </Border>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </StackPanel>
+
+            <!-- 4. Nome e descrição -->
+            <StackPanel Spacing="8">
+              <TextBlock Text="4. NOME E DESCRIÇÃO" Classes="secao"/>
+              <TextBox Text="{Binding NovoNome}"
+                       PlaceholderText="Nome do encantamento (obrigatório)"/>
+              <TextBox Text="{Binding NovaDescricao}"
+                       PlaceholderText="Descrição / observações (opcional)"
+                       AcceptsReturn="True"
+                       Height="70"/>
+            </StackPanel>
+
+            <!-- Botão salvar -->
+            <Button Content="💾 Salvar encantamento"
+                    Classes="primario"
+                    HorizontalAlignment="Right"
+                    Command="{Binding SalvarEncantamentoCommand}"/>
+
+          </StackPanel>
+        </Border>
+
+        <!-- ── LISTA DE ENCANTAMENTOS ─────────────────────────────────────── -->
+        <StackPanel Spacing="8">
+          <TextBlock Text="ENCANTAMENTOS SALVOS" Classes="secao"
+                     IsVisible="{Binding !ConstrutorAberto}"/>
+
+          <TextBlock Text="Nenhum encantamento criado ainda."
+                     Foreground="#585B70" FontSize="12"
+                     IsVisible="{Binding Encantamentos.Count,
+                         Converter={x:Static ObjectConverters.IsNull}}"/>
+
+          <ItemsControl ItemsSource="{Binding Encantamentos}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="vm:EncantamentoViewModel">
+                <Border Background="#313244" CornerRadius="8"
+                        Padding="14 12" Margin="0 0 0 6">
+                  <Grid ColumnDefinitions="* Auto">
+
+                    <StackPanel Grid.Column="0" Spacing="6">
+
+                      <!-- Nome e descrição -->
+                      <TextBlock Text="{Binding Nome}"
+                                 FontSize="15" FontWeight="SemiBold"
+                                 Foreground="#CDD6F4"/>
+                      <TextBlock Text="{Binding Descricao}"
+                                 FontSize="12" Foreground="#A6ADC8"
+                                 TextWrapping="Wrap"
+                                 IsVisible="{Binding Descricao,
+                                     Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+
+                      <!-- Stats em linha -->
+                      <WrapPanel Orientation="Horizontal">
+
+                        <Border Background="#1E1E2E" CornerRadius="4"
+                                Padding="8 4" Margin="0 0 6 4">
+                          <StackPanel Orientation="Horizontal" Spacing="4">
+                            <TextBlock Text="Custo:" Classes="label"/>
+                            <TextBlock Text="{Binding Custo}"
+                                       Foreground="#CBA6F7" FontWeight="Bold"/>
+                          </StackPanel>
+                        </Border>
+
+                        <Border Background="#1E1E2E" CornerRadius="4"
+                                Padding="8 4" Margin="0 0 6 4">
+                          <StackPanel Orientation="Horizontal" Spacing="4">
+                            <TextBlock Text="Dano:" Classes="label"/>
+                            <TextBlock Text="{Binding Poder}"
+                                       Foreground="#A6E3A1" FontWeight="Bold"/>
+                          </StackPanel>
+                        </Border>
+
+                        <Border Background="#1E1E2E" CornerRadius="4"
+                                Padding="8 4" Margin="0 0 6 4">
+                          <StackPanel Orientation="Horizontal" Spacing="4">
+                            <TextBlock Text="Ações:" Classes="label"/>
+                            <TextBlock Text="{Binding Acoes}"
+                                       Foreground="#89B4FA" FontWeight="Bold"/>
+                          </StackPanel>
+                        </Border>
+
+                        <Border Background="#1E1E2E" CornerRadius="4"
+                                Padding="8 4" Margin="0 0 6 4"
+                                IsVisible="{Binding Duracao,
+                                    Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                          <StackPanel Orientation="Horizontal" Spacing="4">
+                            <TextBlock Text="Duração:" Classes="label"/>
+                            <TextBlock Text="{Binding Duracao}"
+                                       Foreground="#CDD6F4"/>
+                          </StackPanel>
+                        </Border>
+
+                        <Border Background="#1E1E2E" CornerRadius="4"
+                                Padding="8 4" Margin="0 0 6 4"
+                                IsVisible="{Binding Tamanho,
+                                    Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                          <StackPanel Orientation="Horizontal" Spacing="4">
+                            <TextBlock Text="Tamanho:" Classes="label"/>
+                            <TextBlock Text="{Binding Tamanho}"
+                                       Foreground="#CDD6F4"/>
+                          </StackPanel>
+                        </Border>
+
+                        <Border Background="#1E1E2E" CornerRadius="4"
+                                Padding="8 4" Margin="0 0 6 4"
+                                IsVisible="{Binding Alcance,
+                                    Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                          <StackPanel Orientation="Horizontal" Spacing="4">
+                            <TextBlock Text="Alcance:" Classes="label"/>
+                            <TextBlock Text="{Binding Alcance}"
+                                       Foreground="#CDD6F4"/>
+                          </StackPanel>
+                        </Border>
+
+                      </WrapPanel>
+
+                      <!-- Composição -->
+                      <StackPanel Orientation="Horizontal" Spacing="6">
+                        <TextBlock Text="{Binding FormaNome}"
+                                   FontSize="11" Foreground="#7C3AED" FontWeight="SemiBold"/>
+                        <TextBlock Text="{Binding TransmutacoesNome}"
+                                   FontSize="11" Foreground="#059669"
+                                   IsVisible="{Binding TransmutacoesNome,
+                                       Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+                        <TextBlock Text="{Binding ModificadoresNome}"
+                                   FontSize="11" Foreground="#D97706"
+                                   IsVisible="{Binding ModificadoresNome,
+                                       Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+                      </StackPanel>
+
+                    </StackPanel>
+
+                    <!-- Botão excluir -->
+                    <Button Grid.Column="1"
+                            Content="✕" Classes="perigo"
+                            VerticalAlignment="Top"
+                            Command="{Binding $parent[UserControl].((vm:EncantamentosViewModel)DataContext).ExcluirEncantamentoCommand}"
+                            CommandParameter="{Binding}"/>
+                  </Grid>
+                </Border>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </StackPanel>
+
+      </StackPanel>
+    </ScrollViewer>
+
+  </DockPanel>
+</UserControl>

@@ -14,6 +14,6 @@ public partial class MainWindow : Window
     private async void OnOpened(object? sender, EventArgs e)
     {
         if (DataContext is MainViewModel vm)
-            await vm.Cartas.CarregarAsync();
+            await vm.InicializarAsync();
     }
 }

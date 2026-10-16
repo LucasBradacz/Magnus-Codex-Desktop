@@ -1,0 +1,343 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:MagnusCodex.Desktop.ViewModels"
+             xmlns:conv="using:MagnusCodex.Desktop.Converters"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="700"
+             x:Class="MagnusCodex.Desktop.Views.PersonagemCartasView"
+             x:DataType="vm:PersonagemCartasViewModel">
+
+  <UserControl.Resources>
+    <conv:TipoCorConverter x:Key="TipoCorConverter"/>
+  </UserControl.Resources>
+
+  <UserControl.Styles>
+    <Style Selector="Button.primario">
+      <Setter Property="Background" Value="#7C3AED"/>
+      <Setter Property="Foreground" Value="White"/>
+      <Setter Property="Padding" Value="12 7"/>
+      <Setter Property="CornerRadius" Value="6"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Cursor" Value="Hand"/>
+    </Style>
+    <Style Selector="Button.primario:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="#6D28D9"/>
+    </Style>
+    <Style Selector="Button.filtro">
+      <Setter Property="Background" Value="#45475A"/>
+      <Setter Property="Foreground" Value="#CDD6F4"/>
+      <Setter Property="Padding" Value="10 4"/>
+      <Setter Property="CornerRadius" Value="12"/>
+      <Setter Property="FontSize" Value="12"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Cursor" Value="Hand"/>
+    </Style>
+    <Style Selector="Button.filtro:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="#585B70"/>
+    </Style>
+    <Style Selector="Button.remover">
+      <Setter Property="Background" Value="#F38BA822"/>
+      <Setter Property="Foreground" Value="#F38BA8"/>
+      <Setter Property="Padding" Value="4 2"/>
+      <Setter Property="CornerRadius" Value="4"/>
+      <Setter Property="FontSize" Value="11"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Cursor" Value="Hand"/>
+    </Style>
+    <Style Selector="TextBlock.secao">
+      <Setter Property="FontSize" Value="11"/>
+      <Setter Property="FontWeight" Value="Bold"/>
+      <Setter Property="Foreground" Value="#585B70"/>
+      <Setter Property="Margin" Value="0 0 0 8"/>
+    </Style>
+  </UserControl.Styles>
+
+  <DockPanel Background="#1E1E2E">
+
+    <!-- ── Botão de adicionar (topo) ─────────────────────────────────── -->
+    <Border DockPanel.Dock="Top"
+            Background="#181825"
+            Padding="20 12">
+      <Grid ColumnDefinitions="* Auto">
+        <TextBlock Grid.Column="0"
+                   Text="Cartas do Personagem"
+                   FontSize="16" FontWeight="SemiBold"
+                   Foreground="#CDD6F4"
+                   VerticalAlignment="Center"/>
+        <Button Grid.Column="1"
+                Content="+ Adicionar carta"
+                Classes="primario"
+                Command="{Binding AbrirPainelAdicaoCommand}"
+                IsVisible="{Binding !PainelAdicaoAberto}"/>
+        <Button Grid.Column="1"
+                Content="✕ Fechar"
+                Classes="filtro"
+                Command="{Binding FecharPainelAdicaoCommand}"
+                IsVisible="{Binding PainelAdicaoAberto}"/>
+      </Grid>
+    </Border>
+
+    <!-- ── Painel de adição ───────────────────────────────────────────── -->
+    <Border DockPanel.Dock="Top"
+            IsVisible="{Binding PainelAdicaoAberto}"
+            Background="#313244"
+            Padding="16 12"
+            BoxShadow="0 2 8 0 #44000000">
+      <DockPanel>
+
+        <!-- Filtros -->
+        <StackPanel DockPanel.Dock="Top" Spacing="8" Margin="0 0 0 10">
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <ItemsControl ItemsSource="{Binding OpcoesTipo}">
+              <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                  <StackPanel Orientation="Horizontal" Spacing="5"/>
+                </ItemsPanelTemplate>
+              </ItemsControl.ItemsPanel>
+              <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="x:String">
+                  <Button Content="{Binding}"
+                          Classes="filtro"
+                          Command="{Binding $parent[UserControl].((vm:PersonagemCartasViewModel)DataContext).SetFiltroTipoCommand}"
+                          CommandParameter="{Binding}"/>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </StackPanel>
+          <TextBox Text="{Binding FiltroAdicaoTexto}"
+                   PlaceholderText="Buscar pelo nome..."
+                   Background="#45475A"
+                   Foreground="#CDD6F4"
+                   BorderThickness="0"
+                   CornerRadius="6"
+                   Padding="10 6"/>
+        </StackPanel>
+
+        <!-- Grade de cartas para adicionar -->
+        <ScrollViewer MaxHeight="280"
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled">
+          <ItemsControl ItemsSource="{Binding CartasParaAdicionar}">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <WrapPanel Orientation="Horizontal"/>
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="vm:CartaViewModel">
+                <Border Width="120" Margin="4"
+                        Background="#1E1E2E"
+                        CornerRadius="8"
+                        ClipToBounds="True"
+                        Cursor="Hand">
+                  <StackPanel>
+                    <Panel Height="150" ClipToBounds="True">
+                      <Image Source="{Binding Imagem}"
+                             Stretch="UniformToFill"
+                             IsVisible="{Binding Imagem, Converter={x:Static ObjectConverters.IsNotNull}}"/>
+                      <Border Background="#45475A"
+                              IsVisible="{Binding Imagem, Converter={x:Static ObjectConverters.IsNull}}">
+                        <TextBlock Text="?" FontSize="36" Foreground="#585B70"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                      </Border>
+                      <Border HorizontalAlignment="Right" VerticalAlignment="Top"
+                              Margin="0 4 4 0" Padding="4 2" CornerRadius="3"
+                              Background="{Binding Tipo, Converter={StaticResource TipoCorConverter}}">
+                        <TextBlock Text="{Binding Tipo}" FontSize="8"
+                                   Foreground="White" FontWeight="Bold"/>
+                      </Border>
+                    </Panel>
+                    <StackPanel Margin="6 4 6 6" Spacing="4">
+                      <TextBlock Text="{Binding Nome}"
+                                 FontSize="11" FontWeight="SemiBold"
+                                 Foreground="#CDD6F4"
+                                 TextWrapping="Wrap" MaxLines="2"
+                                 TextTrimming="CharacterEllipsis"/>
+                      <Button Content="+ Adicionar"
+                              Classes="primario"
+                              FontSize="10"
+                              Padding="6 3"
+                              HorizontalAlignment="Stretch"
+                              HorizontalContentAlignment="Center"
+                              Command="{Binding $parent[UserControl].((vm:PersonagemCartasViewModel)DataContext).AdicionarCartaCommand}"
+                              CommandParameter="{Binding}"/>
+                    </StackPanel>
+                  </StackPanel>
+                </Border>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </ScrollViewer>
+
+      </DockPanel>
+    </Border>
+
+    <!-- ── Cartas do personagem ───────────────────────────────────────── -->
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+      <StackPanel Margin="16" Spacing="16">
+
+        <!-- Formas -->
+        <StackPanel Spacing="8">
+          <TextBlock Text="FORMAS" Classes="secao"/>
+          <TextBlock Text="Nenhuma forma adquirida."
+                     Foreground="#585B70" FontSize="12"
+                     IsVisible="{Binding Formas.Count,
+                         Converter={x:Static ObjectConverters.IsNull}}"/>
+          <ItemsControl ItemsSource="{Binding Formas}">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <WrapPanel Orientation="Horizontal"/>
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="vm:CartaViewModel">
+                <Border Width="130" Margin="4"
+                        Background="#313244"
+                        CornerRadius="8"
+                        ClipToBounds="True">
+                  <StackPanel>
+                    <Panel Height="165" ClipToBounds="True">
+                      <Image Source="{Binding Imagem}"
+                             Stretch="UniformToFill"
+                             IsVisible="{Binding Imagem, Converter={x:Static ObjectConverters.IsNotNull}}"/>
+                      <Border Background="#45475A"
+                              IsVisible="{Binding Imagem, Converter={x:Static ObjectConverters.IsNull}}">
+                        <TextBlock Text="?" FontSize="40" Foreground="#585B70"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                      </Border>
+                    </Panel>
+                    <StackPanel Margin="6 4 6 6" Spacing="4">
+                      <TextBlock Text="{Binding Nome}"
+                                 FontSize="11" FontWeight="SemiBold"
+                                 Foreground="#CDD6F4"
+                                 TextWrapping="Wrap" MaxLines="2"
+                                 TextTrimming="CharacterEllipsis"/>
+                      <TextBlock Text="{Binding RodapeInfo}"
+                                 FontSize="10" Foreground="#A6ADC8"/>
+                      <Button Content="Remover"
+                              Classes="remover"
+                              FontSize="10"
+                              HorizontalAlignment="Stretch"
+                              HorizontalContentAlignment="Center"
+                              Command="{Binding $parent[UserControl].((vm:PersonagemCartasViewModel)DataContext).RemoverCartaCommand}"
+                              CommandParameter="{Binding}"/>
+                    </StackPanel>
+                  </StackPanel>
+                </Border>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </StackPanel>
+
+        <!-- Transmutações -->
+        <StackPanel Spacing="8">
+          <TextBlock Text="TRANSMUTAÇÕES" Classes="secao"/>
+          <TextBlock Text="Nenhuma transmutação adquirida."
+                     Foreground="#585B70" FontSize="12"
+                     IsVisible="{Binding Transmutacaos.Count,
+                         Converter={x:Static ObjectConverters.IsNull}}"/>
+          <ItemsControl ItemsSource="{Binding Transmutacaos}">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <WrapPanel Orientation="Horizontal"/>
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="vm:CartaViewModel">
+                <Border Width="130" Margin="4"
+                        Background="#313244"
+                        CornerRadius="8"
+                        ClipToBounds="True">
+                  <StackPanel>
+                    <Panel Height="165" ClipToBounds="True">
+                      <Image Source="{Binding Imagem}"
+                             Stretch="UniformToFill"
+                             IsVisible="{Binding Imagem, Converter={x:Static ObjectConverters.IsNotNull}}"/>
+                      <Border Background="#45475A"
+                              IsVisible="{Binding Imagem, Converter={x:Static ObjectConverters.IsNull}}">
+                        <TextBlock Text="?" FontSize="40" Foreground="#585B70"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                      </Border>
+                    </Panel>
+                    <StackPanel Margin="6 4 6 6" Spacing="4">
+                      <TextBlock Text="{Binding Nome}"
+                                 FontSize="11" FontWeight="SemiBold"
+                                 Foreground="#CDD6F4"
+                                 TextWrapping="Wrap" MaxLines="2"
+                                 TextTrimming="CharacterEllipsis"/>
+                      <TextBlock Text="{Binding RodapeInfo}"
+                                 FontSize="10" Foreground="#A6ADC8"/>
+                      <Button Content="Remover"
+                              Classes="remover"
+                              FontSize="10"
+                              HorizontalAlignment="Stretch"
+                              HorizontalContentAlignment="Center"
+                              Command="{Binding $parent[UserControl].((vm:PersonagemCartasViewModel)DataContext).RemoverCartaCommand}"
+                              CommandParameter="{Binding}"/>
+                    </StackPanel>
+                  </StackPanel>
+                </Border>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </StackPanel>
+
+        <!-- Modificadores -->
+        <StackPanel Spacing="8">
+          <TextBlock Text="MODIFICADORES" Classes="secao"/>
+          <TextBlock Text="Nenhum modificador adquirido."
+                     Foreground="#585B70" FontSize="12"
+                     IsVisible="{Binding Modificadors.Count,
+                         Converter={x:Static ObjectConverters.IsNull}}"/>
+          <ItemsControl ItemsSource="{Binding Modificadors}">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <WrapPanel Orientation="Horizontal"/>
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="vm:CartaViewModel">
+                <Border Width="130" Margin="4"
+                        Background="#313244"
+                        CornerRadius="8"
+                        ClipToBounds="True">
+                  <StackPanel>
+                    <Panel Height="165" ClipToBounds="True">
+                      <Image Source="{Binding Imagem}"
+                             Stretch="UniformToFill"
+                             IsVisible="{Binding Imagem, Converter={x:Static ObjectConverters.IsNotNull}}"/>
+                      <Border Background="#45475A"
+                              IsVisible="{Binding Imagem, Converter={x:Static ObjectConverters.IsNull}}">
+                        <TextBlock Text="?" FontSize="40" Foreground="#585B70"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                      </Border>
+                    </Panel>
+                    <StackPanel Margin="6 4 6 6" Spacing="4">
+                      <TextBlock Text="{Binding Nome}"
+                                 FontSize="11" FontWeight="SemiBold"
+                                 Foreground="#CDD6F4"
+                                 TextWrapping="Wrap" MaxLines="2"
+                                 TextTrimming="CharacterEllipsis"/>
+                      <TextBlock Text="{Binding RodapeInfo}"
+                                 FontSize="10" Foreground="#A6ADC8"/>
+                      <Button Content="Remover"
+                              Classes="remover"
+                              FontSize="10"
+                              HorizontalAlignment="Stretch"
+                              HorizontalContentAlignment="Center"
+                              Command="{Binding $parent[UserControl].((vm:PersonagemCartasViewModel)DataContext).RemoverCartaCommand}"
+                              CommandParameter="{Binding}"/>
+                    </StackPanel>
+                  </StackPanel>
+                </Border>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </StackPanel>
+
+      </StackPanel>
+    </ScrollViewer>
+
+  </DockPanel>
+</UserControl>

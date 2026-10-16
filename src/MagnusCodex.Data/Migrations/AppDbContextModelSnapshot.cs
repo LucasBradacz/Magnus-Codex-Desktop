@@ -292,6 +292,9 @@ namespace MagnusCodex.Data.Migrations
                     b.Property<int>("Superior")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("VidaAdicional")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("VidaAtual")
                         .HasColumnType("INTEGER");
 
