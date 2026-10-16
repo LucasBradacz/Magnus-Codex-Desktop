@@ -18,14 +18,24 @@ public partial class App : Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            // Inicializa banco e seed antes de abrir qualquer janela.
-            // O CSV está em Data/ ao lado do executável.
             var caminhoCsv = Path.Combine(
                 AppContext.BaseDirectory, "Data", "magnus_codex_cartas.csv");
 
-            // Roda de forma síncrona no startup — ok para operação local/rápida.
-            DatabaseInitializer.InicializarAsync(caminhoCsv)
+            var resultado = DatabaseInitializer.InicializarAsync(caminhoCsv)
                 .GetAwaiter().GetResult();
+
+            // Log de startup — visível no terminal ao rodar com "dotnet run"
+            Console.WriteLine($"[DB] {resultado.CaminhoDb}");
+
+            if (resultado.MigracoesAplicadas.Count > 0)
+                Console.WriteLine($"[DB] Migrations aplicadas: {string.Join(", ", resultado.MigracoesAplicadas)}");
+            else
+                Console.WriteLine("[DB] Banco já atualizado, nenhuma migration necessária.");
+
+            if (resultado.SeedRodou)
+                Console.WriteLine($"[DB] Seed concluído: {resultado.TotalCartas} cartas importadas.");
+            else
+                Console.WriteLine($"[DB] Banco já populado: {resultado.TotalCartas} cartas no banco.");
 
             desktop.MainWindow = new MainWindow
             {

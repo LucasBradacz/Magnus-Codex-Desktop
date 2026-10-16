@@ -1,0 +1,223 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:MagnusCodex.Desktop.ViewModels"
+             xmlns:conv="using:MagnusCodex.Desktop.Converters"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="700"
+             x:Class="MagnusCodex.Desktop.Views.CartasView"
+             x:DataType="vm:CartasViewModel">
+
+  <UserControl.Resources>
+    <conv:TipoCorConverter x:Key="TipoCorConverter"/>
+  </UserControl.Resources>
+
+  <UserControl.Styles>
+    <!-- Botão de filtro base -->
+    <Style Selector="Button.filtro">
+      <Setter Property="Background" Value="#45475A"/>
+      <Setter Property="Foreground" Value="#CDD6F4"/>
+      <Setter Property="Padding" Value="10 4"/>
+      <Setter Property="CornerRadius" Value="14"/>
+      <Setter Property="FontSize" Value="12"/>
+      <Setter Property="Cursor" Value="Hand"/>
+      <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+    <Style Selector="Button.filtro:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="#585B70"/>
+    </Style>
+    <!-- Botão de filtro ativo -->
+    <Style Selector="Button.filtro.ativo">
+      <Setter Property="Background" Value="#CBA6F7"/>
+      <Setter Property="Foreground" Value="#1E1E2E"/>
+      <Setter Property="FontWeight" Value="Bold"/>
+    </Style>
+
+    <!-- Card de carta -->
+    <Style Selector="Border.carta">
+      <Setter Property="Transitions">
+        <Transitions>
+          <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.12"/>
+        </Transitions>
+      </Setter>
+    </Style>
+    <Style Selector="Border.carta:pointerover">
+      <Setter Property="RenderTransform" Value="scale(1.03)"/>
+    </Style>
+  </UserControl.Styles>
+
+  <DockPanel>
+
+    <!-- ── Painel de filtros ──────────────────────────────────────────────── -->
+    <Border DockPanel.Dock="Top"
+            Background="#1E1E2E"
+            Padding="16 12"
+            BoxShadow="0 2 8 0 #33000000">
+      <StackPanel Spacing="10">
+
+        <!-- Nível -->
+        <StackPanel Orientation="Horizontal" Spacing="8">
+          <TextBlock Text="Nível"
+                     Width="72"
+                     VerticalAlignment="Center"
+                     Foreground="#A6ADC8"
+                     FontSize="12"
+                     FontWeight="SemiBold"/>
+          <ItemsControl ItemsSource="{Binding OpcoesNivel}">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <StackPanel Orientation="Horizontal" Spacing="5"/>
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="x:String">
+                <Button Content="{Binding}"
+                        Classes="filtro"
+                        Command="{Binding $parent[UserControl].((vm:CartasViewModel)DataContext).SetFiltroNivelCommand}"
+                        CommandParameter="{Binding}"/>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </StackPanel>
+
+        <!-- Disciplina -->
+        <StackPanel Orientation="Horizontal" Spacing="8">
+          <TextBlock Text="Disciplina"
+                     Width="72"
+                     VerticalAlignment="Center"
+                     Foreground="#A6ADC8"
+                     FontSize="12"
+                     FontWeight="SemiBold"/>
+          <ItemsControl ItemsSource="{Binding OpcoesDisciplina}">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <StackPanel Orientation="Horizontal" Spacing="5"/>
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="x:String">
+                <Button Content="{Binding}"
+                        Classes="filtro"
+                        Command="{Binding $parent[UserControl].((vm:CartasViewModel)DataContext).SetFiltroDisciplinaCommand}"
+                        CommandParameter="{Binding}"/>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </StackPanel>
+
+        <!-- Tipo -->
+        <StackPanel Orientation="Horizontal" Spacing="8">
+          <TextBlock Text="Tipo"
+                     Width="72"
+                     VerticalAlignment="Center"
+                     Foreground="#A6ADC8"
+                     FontSize="12"
+                     FontWeight="SemiBold"/>
+          <ItemsControl ItemsSource="{Binding OpcoesTipo}">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <StackPanel Orientation="Horizontal" Spacing="5"/>
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="x:String">
+                <Button Content="{Binding}"
+                        Classes="filtro"
+                        Command="{Binding $parent[UserControl].((vm:CartasViewModel)DataContext).SetFiltroTipoCommand}"
+                        CommandParameter="{Binding}"/>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </StackPanel>
+
+      </StackPanel>
+    </Border>
+
+    <!-- ── Indicador de carregamento ─────────────────────────────────────── -->
+    <Border DockPanel.Dock="Top"
+            IsVisible="{Binding Carregando}"
+            Background="#313244"
+            Padding="12 6">
+      <TextBlock Text="Carregando cartas…"
+                 Foreground="#CDD6F4"
+                 HorizontalAlignment="Center"
+                 FontSize="13"/>
+    </Border>
+
+    <!-- ── Grade de cartas ───────────────────────────────────────────────── -->
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled"
+                  VerticalScrollBarVisibility="Auto"
+                  Background="#181825">
+      <ItemsControl ItemsSource="{Binding CartasFiltradas}"
+                    Margin="10">
+        <ItemsControl.ItemsPanel>
+          <ItemsPanelTemplate>
+            <WrapPanel Orientation="Horizontal"/>
+          </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+        <ItemsControl.ItemTemplate>
+          <DataTemplate x:DataType="vm:CartaViewModel">
+            <Border Width="148"
+                    Margin="5"
+                    Background="#313244"
+                    CornerRadius="8"
+                    ClipToBounds="True"
+                    Cursor="Hand"
+                    Classes="carta">
+              <StackPanel>
+
+                <!-- Área da imagem -->
+                <Panel Height="198" ClipToBounds="True">
+                  <!-- Imagem real -->
+                  <Image Source="{Binding Imagem}"
+                         Stretch="UniformToFill"
+                         IsVisible="{Binding Imagem,
+                             Converter={x:Static ObjectConverters.IsNotNull}}"/>
+                  <!-- Placeholder sem imagem -->
+                  <Border Background="#45475A"
+                          IsVisible="{Binding Imagem,
+                              Converter={x:Static ObjectConverters.IsNull}}">
+                    <TextBlock Text="?"
+                               FontSize="52"
+                               Foreground="#585B70"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"/>
+                  </Border>
+                  <!-- Badge do tipo -->
+                  <Border HorizontalAlignment="Right"
+                          VerticalAlignment="Top"
+                          Margin="0 6 6 0"
+                          Padding="5 2"
+                          CornerRadius="4"
+                          Background="{Binding Tipo,
+                              Converter={StaticResource TipoCorConverter}}">
+                    <TextBlock Text="{Binding Tipo}"
+                               FontSize="9"
+                               Foreground="White"
+                               FontWeight="Bold"/>
+                  </Border>
+                </Panel>
+
+                <!-- Nome e rodapé -->
+                <StackPanel Margin="8 6 8 8" Spacing="3">
+                  <TextBlock Text="{Binding Nome}"
+                             FontWeight="SemiBold"
+                             FontSize="12"
+                             Foreground="#CDD6F4"
+                             TextWrapping="Wrap"
+                             MaxLines="2"
+                             TextTrimming="CharacterEllipsis"/>
+                  <TextBlock Text="{Binding RodapeInfo}"
+                             FontSize="10"
+                             Foreground="#A6ADC8"/>
+                </StackPanel>
+
+              </StackPanel>
+            </Border>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+    </ScrollViewer>
+
+  </DockPanel>
+</UserControl>

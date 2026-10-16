@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <OutputType>WinExe</OutputType>
+    <OutputType Condition="'$(Configuration)' == 'Release'">WinExe</OutputType>
+    <OutputType Condition="'$(Configuration)' != 'Release'">Exe</OutputType>
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -10,12 +11,14 @@
 
   <ItemGroup>
     <Folder Include="Models\" />
-    <AvaloniaResource Include="Assets\**" />
+    <!-- Copia as imagens como arquivos soltos para Assets/ no output -->
+    <None Include="Assets\**" CopyToOutputDirectory="PreserveNewest"/>
   </ItemGroup>
 
-  <!-- Copia o CSV das cartas para bin/Data/ a cada build -->
+  <!-- Copia o CSV das cartas para bin/Data/ a cada build (quando disponível) -->
   <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)..\..\..\..\Data\magnus_codex_cartas.csv"
+    <None Include="$(MSBuildThisFileDirectory)..\..\Data\magnus_codex_cartas.csv"
+          Condition="Exists('$(MSBuildThisFileDirectory)..\..\Data\magnus_codex_cartas.csv')"
           CopyToOutputDirectory="PreserveNewest"
           Link="Data\magnus_codex_cartas.csv" />
   </ItemGroup>
